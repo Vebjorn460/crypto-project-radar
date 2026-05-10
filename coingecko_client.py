@@ -14,6 +14,7 @@ from config import (
     COINS_PER_PAGE,
     REQUEST_BACKOFF_SECONDS,
     REQUEST_PAGE_DELAY_SECONDS,
+    REQUEST_RATE_LIMIT_SECONDS,
     REQUEST_RETRIES,
     REQUEST_TIMEOUT_SECONDS,
     TOP_N_COINS,
@@ -61,7 +62,7 @@ class CoinGeckoClient:
 
                 if response.status_code == 429:
                     retry_after = response.headers.get("Retry-After")
-                    wait_seconds = float(retry_after or REQUEST_BACKOFF_SECONDS * attempt)
+                    wait_seconds = _rate_limit_wait_seconds(retry_after, attempt)
                     last_error = f"HTTP 429 rate limited; retrying after {wait_seconds:.1f}s"
                     time.sleep(wait_seconds)
                     continue
@@ -96,3 +97,14 @@ class CoinGeckoClient:
             time.sleep(REQUEST_PAGE_DELAY_SECONDS)
 
         return coins[:limit]
+
+
+def _rate_limit_wait_seconds(retry_after: str | None, attempt: int) -> float:
+    """Respect Retry-After, but enforce a useful minimum when APIs return 0."""
+    try:
+        header_wait = float(retry_after) if retry_after is not None else 0.0
+    except ValueError:
+        header_wait = 0.0
+
+    fallback_wait = REQUEST_BACKOFF_SECONDS * attempt
+    return max(header_wait, fallback_wait, REQUEST_RATE_LIMIT_SECONDS)
