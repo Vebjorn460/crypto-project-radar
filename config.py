@@ -7,6 +7,8 @@ from pathlib import Path
 
 
 COINGECKO_BASE_URL = os.getenv("COINGECKO_BASE_URL", "https://api.coingecko.com/api/v3")
+COINGECKO_API_KEY = os.getenv("COINGECKO_API_KEY")
+COINGECKO_API_KEY_HEADER = os.getenv("COINGECKO_API_KEY_HEADER", "x-cg-demo-api-key")
 
 # CoinGecko allows up to 250 results per page on the markets endpoint.
 TOP_N_COINS = int(os.getenv("TOP_N_COINS", "1000"))
@@ -23,7 +25,7 @@ REPORT_LIMIT = int(os.getenv("REPORT_LIMIT", "20"))
 REQUEST_TIMEOUT_SECONDS = int(os.getenv("REQUEST_TIMEOUT_SECONDS", "30"))
 REQUEST_RETRIES = int(os.getenv("REQUEST_RETRIES", "3"))
 REQUEST_BACKOFF_SECONDS = float(os.getenv("REQUEST_BACKOFF_SECONDS", "3"))
+REQUEST_PAGE_DELAY_SECONDS = float(os.getenv("REQUEST_PAGE_DELAY_SECONDS", "2"))
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
-

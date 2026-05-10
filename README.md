@@ -65,6 +65,21 @@ python main.py --telegram
 
 If either variable is missing, the scanner simply prints the report.
 
+## CoinGecko API Key
+
+The scanner can use CoinGecko's public API without a key, but GitHub Actions may hit rate limits. For more reliable scheduled runs, create a CoinGecko demo API key and add it as a GitHub Actions repository secret:
+
+```text
+COINGECKO_API_KEY
+```
+
+The code sends this as the `x-cg-demo-api-key` header by default. If you use a different CoinGecko plan or proxy, override:
+
+```text
+COINGECKO_API_KEY_HEADER
+COINGECKO_BASE_URL
+```
+
 ## Configuration
 
 Most settings can be changed with environment variables:
@@ -78,6 +93,7 @@ DATABASE_PATH=data/radar.sqlite3
 REPORT_LIMIT=20
 REQUEST_RETRIES=3
 REQUEST_BACKOFF_SECONDS=3
+REQUEST_PAGE_DELAY_SECONDS=2
 ```
 
 ## GitHub Actions
