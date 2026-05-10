@@ -1,0 +1,43 @@
+name: Daily Crypto Project Radar
+
+on:
+  schedule:
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+
+jobs:
+  radar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Restore snapshot cache
+        uses: actions/cache@v4
+        with:
+          path: data
+          key: crypto-project-radar-db-${{ github.run_id }}
+          restore-keys: |
+            crypto-project-radar-db-
+
+      - name: Run radar report
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python main.py --telegram
+
+      - name: Upload snapshot database
+        uses: actions/upload-artifact@v4
+        with:
+          name: crypto-project-radar-db
+          path: data/radar.sqlite3
+          if-no-files-found: ignore
